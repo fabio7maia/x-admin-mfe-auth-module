@@ -1,0 +1,8 @@
+{
+	"name": "xAdminAuthModule",
+	"exposes": {
+		"./components/appHeader/index": "./src/components/appHeader/index.ts",
+		"./hooks/useLanguage/index": "./src/hooks/useLanguage/index.ts",
+		"./hooks/useUser/index": "./src/hooks/useUser/index.ts"
+	}
+}

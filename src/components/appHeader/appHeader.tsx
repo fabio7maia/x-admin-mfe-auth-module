@@ -1,18 +1,14 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { changeLanguage, useLanguage } from '@store';
 
-export const AppHeader: React.FC = () => {
-	const language = useLanguage();
-	const dispatch = useDispatch();
+interface AppHeaderProps {
+	title: string;
+}
 
-	const handleOnChangeLanguage = React.useCallback(
-		(evt): void => {
-			dispatch(changeLanguage(evt.currentTarget.value));
-		},
-		[dispatch]
-	);
+export const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
+	const language = 'PT';
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function, no-empty-function
+	const handleOnChangeLanguage = React.useCallback((evt): void => {}, []);
 
 	return (
 		<>
@@ -27,9 +23,10 @@ export const AppHeader: React.FC = () => {
 					alignItems: 'center',
 					justifyContent: 'space-between',
 					padding: '0 30px',
+					color: '#fff',
 				}}
 			>
-				<Link to="/dashboard">Dashboard</Link>
+				<h1>{title}</h1>
 				<select value={language} onChange={handleOnChangeLanguage}>
 					<option value="en">EN</option>
 					<option value="pt">PT</option>
@@ -39,3 +36,5 @@ export const AppHeader: React.FC = () => {
 		</>
 	);
 };
+
+export default AppHeader;

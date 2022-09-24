@@ -3,16 +3,17 @@ const ModuleFederationPlugin = require('webpack').container.ModuleFederationPlug
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 const Webpack5RemoteTypesPlugin = require('webpack5-remote-types-plugin').default;
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const packageJson = require('./package.json');
 const webpack = require('webpack');
 const dotEnv = require('dotenv');
+const federationConfig = require('./federation.config.json');
 
 const env = process.env.NODE_ENV || 'development';
 const envVars = dotEnv.config().parsed || process.env;
-const hostWidgetsModule =
-	(envVars ? envVars.REACT_APP_HOST_WIDGETS_MODULE : process.env.REACT_APP_HOST_WIDGETS_MODULE) || '';
+// const hostAuthModule = (envVars ? envVars.REACT_APP_HOST_AUTH_MODULE : process.env.REACT_APP_HOST_AUTH_MODULE) || '';
 const publicUrl = (envVars ? envVars.PUBLIC_URL : process.env.PUBLIC_URL) || '/public';
 
 const transformEnvVars = (envVars) => {
@@ -76,20 +77,14 @@ module.exports = {
 	},
 	plugins: [
 		new ModuleFederationPlugin({
-			name: 'appReactJs',
-			remotes: {
-				widgetsModule: `widgetsModule@${hostWidgetsModule}`,
-			},
+			...federationConfig,
+			filename: 'remoteEntry.js',
+			// remotes: {
+			// 	xAdminAuthModule: `xAdminAuthModule@${hostAuthModule}`,
+			// },
 			shared: {
 				...transformDependencies(packageJson.dependencies),
 			},
-		}),
-		new Webpack5RemoteTypesPlugin({
-			remotes: {
-				widgetsModule: `widgetsModule@${hostWidgetsModule}`,
-			},
-			outputDir: '.webpack-federation-modules-types',
-			remoteFileName: '[name]-dts.tgz',
 		}),
 		new HtmlWebpackPlugin({
 			template: './public/index.html',
@@ -106,6 +101,33 @@ module.exports = {
 					},
 				},
 			],
+		}),
+		new FileManagerPlugin({
+			events: {
+				onStart: {
+					delete: [
+						{
+							source: '..webpack-federation-modules-types',
+							options: {
+								force: true,
+							},
+						},
+					],
+				},
+				onEnd: {
+					archive: [
+						{
+							source: '.webpack-federation-modules-types',
+							destination: './dist/xAdminAuthModule-dts.tgz',
+							format: 'tar', // optional
+							options: {
+								// see https://www.archiverjs.com/docs/archiver
+								gzip: true,
+							},
+						},
+					],
+				},
+			},
 		}),
 		new ForkTsCheckerWebpackPlugin(),
 		new webpack.DefinePlugin({
