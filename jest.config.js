@@ -16,9 +16,9 @@ module.exports = {
 		'!**/src/setupTests.js',
 	],
 	setupFiles: ['react-app-polyfill/jsdom', './src/setupTests.js'],
-	setupFilesAfterEnv: [],
+	setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
 	testMatch: ['<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}', '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}'],
-	testEnvironment: 'jest-environment-jsdom-fourteen',
+	testEnvironment: 'jsdom',
 	transform: {
 		'^.+\\.(js|jsx|ts|tsx)$': '<rootDir>/node_modules/babel-jest',
 		'^.+\\.css$': '<rootDir>/node_modules/react-scripts/config/jest/cssTransform.js',
